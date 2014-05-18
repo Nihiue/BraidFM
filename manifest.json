@@ -1,0 +1,23 @@
+{
+	"manifest_version":2,
+	"name":"Braid FM",
+	"description":"A better BaiduFM extension for Chrome. E-mail:Nihiue@gmail.com",
+	"version":"0.0.1",
+	"background":{"page": "background.html"},
+	"permissions":[],
+	"browser_action":{
+		"default_icon":{
+			"19":"19.png",
+			"38":"38.png"
+		},
+		"default_title":"Braid FM",
+		"default_popup":"popup.html"
+	},
+	"content_scripts" :[  
+    {  
+      "matches" : ["http://fm.baidu.com/?embed"],  
+      "js": ["embed.js"],  
+      "run_at" : "document_idle",  
+      "all_frames" : true  
+    }]
+}

@@ -1,0 +1,53 @@
+<!doctype html>
+<html>
+<style type="text/css">
+
+#frame
+{
+ font-family: "Microsoft YaHei UI","Microsoft YaHei","Lucida Grande",Arial,sans-serif;
+ font-size: 14px;
+ width: 20em;
+ text-align: center;
+}
+#panel
+{
+  height: 13em; 
+}
+button
+{  
+  height: 2em;
+  margin: 0.5em 1em;
+  width:8em;
+}
+</style>
+
+  <body>    
+   <div id="frame">
+        <button id="btn_open">Turn On</button>
+        <button id="btn_close">Turn Off</button>
+         <div id="player_ctls">  
+                <hr>
+                <div id="panel">
+                    <h2 id="text_song"></h2>                     
+                    <h3><span id="text_album"></span><span id="text_artist"></span></h3>
+                    <p id="lyrics">
+                    <span id="text_lyrics_0"></span> <br>
+                    <span id="text_lyrics_1"></span> <br>
+                    <span id="text_lyrics_2"></span> <br>
+                    </p>
+                    <span id="text_time"></span>                      
+                </div>
+                <hr>
+                <button id="btn_play">Play</button>
+                <button id="btn_skip">Next</button> 
+                <button id="btn_love">Love This</button>
+                <button id="btn_hate">Hate This</button>
+                   
+         </div>
+         <hr>
+         <p>Braid FM Beta 0.0.1<br><small>Nihiue@gmail.com</small></p>
+         
+   </div>
+   <script src="popup.js"></script>
+  </body>
+</html>
