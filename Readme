@@ -1,6 +1,14 @@
-Braid FM 0.0.1 Beta
+Braid FM
  -A better Baidu FM extension for Chrome.
  
 最近用百度FM比较多，但是其官方Chrome插件极没诚意，所以下午自己写了一个，支持后台播放，UI还没怎么弄。先放个Beta版，后面更新。
 
 E-mail:Nihiue@Gmail.com
+
+
+--- 0.0.1 2014.5.18 ----
+*实现基本功能
+
+--- 0.0.2 2014.5.18 ---
+*添加字体阴影
+*支持自动升级
