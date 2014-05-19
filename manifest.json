@@ -2,7 +2,7 @@
 	"manifest_version":2,
 	"name":"Braid FM",
 	"description":"A better BaiduFM extension for Chrome. E-mail:Nihiue@gmail.com",
-	"version":"0.0.2",
+	"version":"0.0.3",
 	"update_url": "http://braid.sinaapp.com/update.xml",
 	"background":{"page": "background.html"},
 	"permissions":[],

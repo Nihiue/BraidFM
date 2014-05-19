@@ -1,57 +1,85 @@
-var UIctls={}
+var FMUI={}
+var currentUIStage="";
 function cacheUIctls()
 {  
-    var UIctlslist=["btn_open","btn_close","btn_love","btn_skip","btn_hate",
+    var FMUIlist=["btn_turnon","btn_turnoff","btn_love","btn_skip","btn_hate",
                     "btn_play","text_song","text_time","text_album",
                     "text_artist","text_lyrics_0","text_lyrics_1","text_lyrics_2","player_ctls"];    
-  for(var idx in UIctlslist)
+  for(var idx in FMUIlist)
   {
-    var i=UIctlslist[idx];
-    UIctls[i]=document.getElementById(i);
+    var i=FMUIlist[idx];
+    FMUI[i]=document.getElementById(i);
   }        
             
 }
+function switchToUIStage(stage)
+{
+    if(stage=="off")
+    {
+       FMUI.player_ctls.style.display="none";
+       FMUI.btn_turnon.disabled=false;
+       FMUI.btn_turnoff.disabled=true;
+       currentUIStage="off";
+    }
+    else if(stage=="on")
+    {
+        FMUI.player_ctls.style.display="block";
+        FMUI.btn_turnon.disabled=true;
+        FMUI.btn_turnoff.disabled=false;
+        currentUIStage="on";
+    }
+    else if(stage=="loading")
+    {
+        FMUI.player_ctls.style.display="block";
+        FMUI.btn_turnon.disabled=true;
+        FMUI.btn_turnoff.disabled=true;
+        FMUI.text_time.innerText="Loading...please wait.";
+        currentUIStage="loading";
+    }
+    else
+    {
+        console.log("Unknown stage:"+stage);
+    }
+}
 function updateUI()
 {
-    if(MyPlayer.isOn)
-    {
-        UIctls.player_ctls.style.display="block";
-        UIctls.btn_open.disabled=true;
-        UIctls.btn_close.disabled=false;
+    var stage=MyPlayer.UI_sync();
+    if(stage!=currentUIStage)
+        switchToUIStage(stage);
+    if(stage=="on")
+    {       
         var embedInfo=MyPlayer.status;
         if(embedInfo)
         {
-            UIctls.btn_play.innerText=MyPlayer.status.isplaying?"Pause":"Play";      
-            UIctls.btn_play.disabled=false;
-            UIctls.text_song.innerText=embedInfo.song;
-            UIctls.text_time.innerText=embedInfo.time;
-            UIctls.text_album.innerText=embedInfo.album;
-            UIctls.text_artist.innerText=embedInfo.artist;
-            UIctls.text_lyrics_0.innerText=embedInfo.lyrics[0];
-            UIctls.text_lyrics_1.innerText=embedInfo.lyrics[1];
-            UIctls.text_lyrics_2.innerText=embedInfo.lyrics[2];    
+            FMUI.btn_play.innerText=MyPlayer.status.isplaying?"Pause":"Play";      
+            FMUI.btn_play.disabled=false;
+            FMUI.text_song.innerText=embedInfo.song;
+            FMUI.text_time.innerText=embedInfo.time;
+            FMUI.text_album.innerText=embedInfo.album;
+            FMUI.text_artist.innerText=embedInfo.artist;
+            FMUI.text_lyrics_0.innerText=embedInfo.lyrics[0];
+            FMUI.text_lyrics_1.innerText=embedInfo.lyrics[1];
+            FMUI.text_lyrics_2.innerText=embedInfo.lyrics[2];    
         }      
     }
     else
     {
-       UIctls.player_ctls.style.display="none";
-       UIctls.btn_open.disabled=false;
-       UIctls.btn_close.disabled=true;
+     
     }
 }
 function bindBtnEvent()
 { 
     var playEventHandler=function()
     {
-        UIctls.btn_play.disabled=true;
+        FMUI.btn_play.disabled=true;
         MyPlayer.play();
     }
-    UIctls.btn_open.onclick=MyPlayer.open;  
-    UIctls.btn_close.onclick=MyPlayer.close;  
-    UIctls.btn_play.onclick=playEventHandler;  
-    UIctls.btn_skip.onclick=MyPlayer.skip;  
-    UIctls.btn_love.onclick=MyPlayer.love;  
-    UIctls.btn_hate.onclick=MyPlayer.hate;      
+    FMUI.btn_turnon.onclick=MyPlayer.turnOn;  
+    FMUI.btn_turnoff.onclick=MyPlayer.turnOff;  
+    FMUI.btn_play.onclick=playEventHandler;  
+    FMUI.btn_skip.onclick=MyPlayer.skip;  
+    FMUI.btn_love.onclick=MyPlayer.love;  
+    FMUI.btn_hate.onclick=MyPlayer.hate;      
 }
 
 var MyPlayer = chrome.extension.getBackgroundPage().MyPlayer;
