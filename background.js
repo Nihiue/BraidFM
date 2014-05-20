@@ -1,95 +1,132 @@
+var embedConnection;
 var player_iframe;
-var latestStatus;
-var auto_stop_symbol;
-var MyPlayer={isOn:false};
+var MyPlayer={isOn:false,channelList:undefined,status:undefined,songDetail:undefined};
 
-MyPlayer.turnOn=function()
+var push_UI_update=function()
 {
-	if(player_iframe==undefined)
+	var ws=chrome.extension.getViews({type:"popup"});
+	if (ws.length<1)
+		return;
+	var info=MyPlayer.getUI_Info();
+	for(var idx in ws)
 	{
-		player_iframe=document.createElement("iframe");
-		player_iframe.src="http://fm.baidu.com/?embed";
-		document.body.appendChild(player_iframe);
+		if(ws[idx].updateUI)
+			ws[idx].updateUI(info);
 	}
 }
-MyPlayer.turnOff=function()
-{
-	if(!(player_iframe==undefined))
-	{	
-		document.body.removeChild(player_iframe);
-		player_iframe=undefined;	
-		MyPlayer.isOn=false;	
-		MyPlayer.isEmbedReady=false;		
-	}		
-}
-MyPlayer.play=function()
-{
-	sendMsg_to_embed({"action":"click","targetId":"playerpanel-btnplay"});
-}
 
-MyPlayer.skip=function()
+var embedListener=function(msg)
 {
-	sendMsg_to_embed({"action":"click","targetId":"playerpanel-btnskip"});
-}
-MyPlayer.love=function()
-{
-	sendMsg_to_embed({"action":"click","targetId":"playerpanel-btnlove"});
-}
-MyPlayer.hate=function()
-{
-	sendMsg_to_embed({"action":"click","targetId":"playerpanel-btnhate"});
-}
-MyPlayer.UI_sync=function()
-{	
+	MyPlayer.isOn=true;
+	if(MyPlayer.channelList==undefined&&msg.channelList==undefined)
+	  	embedConnection.postMessage({action: "post_channel_list"});
 
-	if(player_iframe==undefined)
-	{
-		return "off";	
-		MyPlayer.isOn=false;
-	}
-	var now=(new Date().getTime())
-	if(!MyPlayer.status||!MyPlayer.status.timeStamp||(now-MyPlayer.status.timeStamp)>2000)
-		sendMsg_to_embed({"action":"start_post_status"});
-	if(MyPlayer.isOn)
-	{
-		auto_stop_symbol=0;	
-		return "on";
-	}	
-	return "loading";
-}
-MyPlayer.getStatus=function()
-{
-	
- 	return latestStatus;
-}
-
-var sendMsg_to_embed=function(msgobj)
-{
-	if(MyPlayer.isOn)
-	{
-		player_iframe.contentWindow.postMessage({"Braid_Msg_From_BG":msgobj},'*');		
+	if(msg.init)	{
+		embedConnection.postMessage({action: "begin"});
 	}
 
-}
-
-function bgMsgHandler(e)
-{ 
- var msg=e.data.Braid_Msg_From_Embed;
-  if(typeof(msg)=="undefined")
-      	return true;
-  MyPlayer.isOn=true;
-  if(msg.status)
-  {
-  		auto_stop_symbol++;
+	else if(msg.status)	{
   		MyPlayer.status=msg.status;
-  		if(auto_stop_symbol>20)
+  		if(msg.status.songDetail)
   		{
-  			sendMsg_to_embed({"action":"stop_post_status"});
+  			console.log("%c new Song: "+msg.status.songDetail.song,"color:green");  
+  			MyPlayer.songDetail=msg.status.songDetail;
+
   		}
-  }
-  else if(msg.embedLog)
-  {  		
-  		console.log("%c["+((new Date()).toLocaleString())+"] -Embed Log: "+msg.embedLog,"color:blue");  			 
-  }
+  		push_UI_update();
+	}	
+	else if(msg.channelList)	{
+		MyPlayer.channelList=msg.channelList;
+		MyPlayer.isLoggedin=msg.isLoggedin;
+		push_UI_update();
+	}
+
+	if(msg.embedLog)	  		
+		console.log("%c["+((new Date()).toLocaleString())+"] -Embed Log: "+msg.embedLog,"color:blue");  	
 }
-window.addEventListener('message',bgMsgHandler, false);
+
+var embedClosdListener=function()
+{
+	console.log("%c Embed Disconnected.","color:red");  
+	embedConnection=undefined;
+	MyPlayer.turn_Off();
+}
+MyPlayer.turn_On=function()
+{
+	if(player_iframe==undefined)
+		{
+			player_iframe=document.createElement("iframe");
+			player_iframe.src="http://fm.baidu.com/?embed";
+			document.body.appendChild(player_iframe);
+		}
+}
+
+MyPlayer.turn_Off=function()
+{
+		if(!(player_iframe==undefined))
+		{	
+			document.body.removeChild(player_iframe);
+			player_iframe=undefined;	
+			MyPlayer.isOn=false;	
+			MyPlayer.channelList=undefined;	
+		}		
+}
+
+MyPlayer._do=function(command)
+{
+	if(!embedConnection)
+		return false;
+	switch(command) 
+	{
+		case "play":
+			embedConnection.postMessage({"action":"click","targetId":"playerpanel-btnplay"});
+			break;
+
+		case "skip":
+			embedConnection.postMessage({"action":"click","targetId":"playerpanel-btnskip"});			
+			break;
+
+		case "hate":
+			embedConnection.postMessage({"action":"click","targetId":"playerpanel-btnhate"});
+			break;
+
+		case "love":
+			embedConnection.postMessage({"action":"click","targetId":"playerpanel-btnlove"});
+			break;
+
+		default:
+			console.log("Uknown command:"+command);
+			return false;
+	}
+}
+MyPlayer.toChannel=function(ch_id)
+{
+	embedConnection.postMessage({"action":"click","targetId":ch_id});
+}
+MyPlayer.getUI_Info=function()
+{	
+	var info={};
+	if(player_iframe==undefined)	
+		info.stage="off";	
+	else if(MyPlayer.isOn)	
+		info.stage="on";	
+	else 
+		info.stage="loading";
+	info.status=MyPlayer.status;
+	info.isLoggedin=MyPlayer.isLoggedin;
+	return info;
+}
+
+
+chrome.extension.onConnect.addListener(function(port) {
+  if(port.name == "Embed_MSG"&&embedConnection==undefined)
+  {		
+  		embedConnection=port;
+		port.onMessage.addListener(embedListener)
+		port.onDisconnect.addListener(embedClosdListener);
+  }
+  else
+  {
+  		port.disconnect();
+  }
+});

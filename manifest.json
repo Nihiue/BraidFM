@@ -1,15 +1,21 @@
 {
 	"manifest_version":2,
 	"name":"Braid FM",
-	"description":"A better BaiduFM extension for Chrome. E-mail:Nihiue@gmail.com",
-	"version":"0.0.3",
+	"description":"A better BaiduFM extension for Chrome. More info on http://braid.sinaapp.com/",
+	"version":"0.1.0",
+	"icons": {
+	 		"19":"19.png",
+			"38":"38.png",
+			"128":"128.png" 
+			},
 	"update_url": "http://braid.sinaapp.com/update.xml",
 	"background":{"page": "background.html"},
 	"permissions":[],
 	"browser_action":{
 		"default_icon":{
 			"19":"19.png",
-			"38":"38.png"
+			"38":"38.png",
+			"128":"128.png"
 		},
 		"default_title":"Braid FM",
 		"default_popup":"popup.html"

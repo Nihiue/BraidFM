@@ -1,59 +1,241 @@
 <!doctype html>
 <html>
 <style type="text/css">
-
-#frame
-{
- text-shadow: 2px 2px 3px #ccc;
+body
+{ 
+ background: url("popup_bg.jpg") center; 
  font-family: "Microsoft YaHei UI","Microsoft YaHei","Lucida Grande",Arial,sans-serif;
  font-size: 14px;
- color:#222;
- width: 20em;
+ color:#fff; 
  text-align: center;
+ margin: 0;
+ padding: 0;
+ overflow: hidden;
 }
-#lyrics{
-  min-height: 6em; 
-}
-p
+#container
 {
-  line-height: 1.5em;  
+ margin:0;
+ padding: 0;
+ width: 550px; 
+ height: 80px; 
+}
+a
+{    
+  display: inline-block;
+  color: #eee;
+  text-decoration: none;
+  border-radius: 4px;
+  padding: 0.6em 1.5em;
+  margin: 1em 0.5em; 
+  background: rgba(0,0,0,0.3);
+}
+a:hover
+{
+ background: rgba(0,0,0,0.5);
+ text-decoration: none;
+}
+a:visited
+{
+   text-decoration: none;
+}
+a:active
+{
+   background: rgba(0,0,0,0.7);
+   text-decoration: none;
+}
+#header
+{
+  width: 100%;
+  position: absolute;
+  top:0;
+  padding: 1.3em 0;
+  background: rgba(0,0,0,0.5); 
+}
+#header .left
+{
+position: absolute;
+top:1.5em;
+left: 2em;
+}
+#header .right
+{
+ position: absolute;
+ top:1.5em;
+ right: 2em;
 }
 
-button
+.header-btn
+{
+  width: 4em;
+  font-size: 80%;
+  padding: 0.5em 1em;  
+  color:#ccc;
+  border: 1px solid #ccc;
+  background: transparent;
+}
+.header-btn:hover
+{
+ background: transparent;
+ color:#fff; 
+ box-shadow:none;
+ border: 1px solid #fff;
+}
+.header-btn:active
+{
+  background: transparent;
+  color:#999;  
+}
+
+#left-col
+{
+  position: absolute;
+  left: 8%;
+  height:220px; 
+  width: 220px;
+  padding-top: 10px;
+}
+#cover
 {  
-  height: 2em;
-  margin: 0.5em 1em;
-  width:8em;
+  background: rgba(255,255,255,0.3);
+  width: 200px;
+  height: 200px;
+  padding: 10px;  
+  box-shadow:0px 0px 15px #222;
+}
+#cover_img
+{
+  border: none;
+  height: 100%;
+  width: 100%;
+}
+#player_panel
+{
+  width: 100%;
+  position:absolute;
+  top:7em;
+}
+#right-col
+{  
+  position: absolute;
+  right:5%;
+  height:240px; 
+  width: 220px;
+  text-shadow: 1px 1px 3px #222;
+  text-align: left;
+}
+#bottom-btn-bar 
+{
+  position: absolute;
+  width: 100%;
+  top: 270px;
+}
+#bottom-btn-bar a
+{
+   width: 4em;
+}
+#text_song
+{
+  font-size:130%;font-weight:bold;
+}
+#sub-title
+{
+  font-size:100%;
+}
+#lyrics_container
+{
+
+  margin:2em 0;
+  padding-top: 3em;
+  height: 4.5em;
+  overflow: hidden;
+}
+#text_lyrics{
+  position: relative;
+  top:0px;
+  transition:top 0.25s linear;
+}
+#text_lyrics li{ 
+ line-height: 1.5em;
+ list-style-type:none;
+}
+#text_lyrics li.lyrics_current_line
+{
+  color: green;  
+  text-shadow: none;
+
+}
+#text_time
+{
+  display: block;
+  margin-top:0.5em;
+}
+#footer
+{
+ position: absolute;
+ top: 425px;
+ right: 20px;
+ opacity: 0.5;
+ font-size: 80%;
+}
+#channel_menu
+{
+  color: #fff;
+  padding: 1em;
+  top: 65px;
+  left: 2em;
+  position: absolute;
+  background: rgba(0,0,0,0.8); 
+  width: 310px;
+  z-index: 100;
+  transition:opacity 0.3s ease-in;
+  border-radius: 8px;
+  display: none;
+  opacity: 0;
+
+}
+#channel_menu a
+{
+  margin:0.5em 0.5em;
+  width: 6em;
 }
 </style>
 
-  <body>    
-   <div id="frame">
-        <button id="btn_turnon">Turn On</button>
-        <button id="btn_turnoff">Turn Off</button>
-         <div id="player_ctls">  
-                <hr>
-                <div id="panel">
-                    <h2 id="text_song"></h2>                     
-                    <h3><span id="text_album"></span><span id="text_artist"></span></h3>
-                    <p id="lyrics">
-                    <span id="text_lyrics_0"></span> <br>
-                    <span id="text_lyrics_1"></span> <br>
-                    <span id="text_lyrics_2"></span> <br>
-                    </p>
-                    <span id="text_time"></span>                      
+
+<body>   
+ <div id="container"> 
+      <div id="header">         
+         <span style="font-size:150%;font-weight:bold;" id="appname">Braid FM</span><br><small id="sub_header"></small>
+         <a href="#" id="btn_switch" class="header-btn right">Power</a>
+         <a href="#" id="btn_channel" class="header-btn left">Channel</a>
+         <div id="channel_menu"></div>
+     </div>
+ 
+     <div id="player_panel">  
+
+                <div id="left-col">
+                      <div id="cover"><img id="cover_img" src="cover.png"></img></div>                     
+                      <span id="text_time"></span>             
                 </div>
-                <hr>
-                <button id="btn_play">Play</button>
-                <button id="btn_skip">Next</button> 
-                <button id="btn_love">Love This</button>
-                <button id="btn_hate">Hate This</button>
-                   
-         </div>
-         <hr>
-         <p>Braid FM 0.0.2 Beta<br><small>Nihiue@gmail.com</small></p>
-         
-   </div>
-   <script src="popup.js"></script>
-  </body>
+
+                <div id="right-col">
+                    <p id="text_song"></p>                     
+                    <p id="sub-title"><span id="text_album" ></span> <span id="text_artist"></span></p>      
+                    <div id="lyrics_container">  
+                            <div id="text_lyrics"></div> 
+                    </div>
+                </div>  
+
+                <div id="bottom-btn-bar">
+                     <a href="#" id="btn_play" class="mainbtn">Play</a>
+                     <a href="#" id="btn_skip" class="mainbtn">Next</a>
+                     <a href="#" id="btn_love" class="mainbtn loggedin">Love</a>
+                     <a href="#" id="btn_hate" class="mainbtn loggedin">Hate</a>
+                </div> 
+
+    </div> <!-- player_panel end -->    
+  <div id="footer">Nihiue@gmail.com</div>
+
+</div>  <!--container end -->    
+<script src="popup.js"></script>
+</body>
 </html>
