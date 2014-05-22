@@ -22,7 +22,7 @@
 	},
 	"content_scripts" :[  
     {  
-      "matches" : ["http://fm.baidu.com/?embed"],  
+      "matches" : ["http://fm.baidu.com/"],  
       "js": ["embed.js"],  
       "run_at" : "document_idle",  
       "all_frames" : true  

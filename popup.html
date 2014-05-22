@@ -3,7 +3,7 @@
 <style type="text/css">
 body
 { 
- background: url("popup_bg.jpg") center; 
+ background: url("popup_bg.jpg") center no-repeat; 
  font-family: "Microsoft YaHei UI","Microsoft YaHei","Lucida Grande",Arial,sans-serif;
  font-size: 14px;
  color:#fff; 
@@ -11,6 +11,7 @@ body
  margin: 0;
  padding: 0;
  overflow: hidden;
+ border: none;
 }
 #container
 {
@@ -48,14 +49,14 @@ a:active
   width: 100%;
   position: absolute;
   top:0;
-  padding: 1.3em 0;
+  padding: 21px 0;
   background: rgba(0,0,0,0.5); 
 }
 #header .left
 {
-position: absolute;
-top:1.5em;
-left: 2em;
+  position: absolute;
+  top:1.5em;
+  left: 2em;
 }
 #header .right
 {
@@ -174,30 +175,31 @@ left: 2em;
  position: absolute;
  top: 425px;
  right: 20px;
- opacity: 0.5;
+ opacity: 0.6;
  font-size: 80%;
 }
+
 #channel_menu
 {
+  max-height: 350px;
+  overflow: auto;
   color: #fff;
   padding: 1em;
   top: 65px;
-  left: 2em;
+  left: -550px;
   position: absolute;
-  background: rgba(0,0,0,0.8); 
-  width: 310px;
+  background: rgba(0,0,0,0.7); 
+  width: 495px;
   z-index: 100;
-  transition:opacity 0.3s ease-in;
+  transition:left 0.5s ease-in;
   border-radius: 8px;
-  display: none;
-  opacity: 0;
-
 }
 #channel_menu a
 {
-  margin:0.5em 0.5em;
-  width: 6em;
+  margin:0.5em 0.6em;
+  width: 5em;
 }
+
 </style>
 
 
@@ -209,12 +211,12 @@ left: 2em;
          <a href="#" id="btn_channel" class="header-btn left">Channel</a>
          <div id="channel_menu"></div>
      </div>
- 
      <div id="player_panel">  
 
-                <div id="left-col">
+                <div id="left-col">                  
                       <div id="cover"><img id="cover_img" src="cover.png"></img></div>                     
-                      <span id="text_time"></span>             
+                      <span id="text_time"></span>    
+                           
                 </div>
 
                 <div id="right-col">
@@ -227,9 +229,10 @@ left: 2em;
 
                 <div id="bottom-btn-bar">
                      <a href="#" id="btn_play" class="mainbtn">Play</a>
-                     <a href="#" id="btn_skip" class="mainbtn">Next</a>
+                     <a href="#" id="btn_skip" class="mainbtn">Skip</a>
                      <a href="#" id="btn_love" class="mainbtn loggedin">Love</a>
                      <a href="#" id="btn_hate" class="mainbtn loggedin">Hate</a>
+
                 </div> 
 
     </div> <!-- player_panel end -->    

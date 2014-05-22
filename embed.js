@@ -3,6 +3,8 @@ var setupBraidFM_Embed=function ()
 	var braidFM_embed_last_song="";
 	var braidFM_embed_timer;
 	var braidFM_conn;
+	var braidFM_lastStatus={};
+	var braidFM_lastCover;
 
 	braidFM_conn = chrome.extension.connect({name: "Embed_MSG"});
 	braidFM_conn.postMessage({init: "Hello"});
@@ -12,7 +14,7 @@ var setupBraidFM_Embed=function ()
   			case "begin":
   				if(braidFM_embed_timer==undefined)
 				{
-					braidFM_embed_timer=window.self.setInterval(postStatus,500);
+					braidFM_embed_timer=window.self.setInterval(postStatus,250);
 					sendLogInfo("Embed Begin.");		    	
 				}
 				break;
@@ -65,25 +67,28 @@ var setupBraidFM_Embed=function ()
 		      return lyc_id;
 	}
 
-	var getSongDetail=function ()
+	var getSongDetail=function (songName)
 	{
 		try{			
 			var lycs=$("#playerpanel-lyrics").innerHTML;
-			if(lycs.indexOf("lyrics-li-1")<0)
+			if(lycs.length<50)
 				return undefined;
 			var detail={};
 			detail.lyrics=lycs;
 			detail.song=$("#playerpanel-songname").innerText;
-			detail.cover=$("#playerpanel-coverimg").children[0].children[0].src;
+			detail.cover=""+$("#playerpanel-coverimg").children[0].children[0].src;			
+			if(detail.cover.length<20||braidFM_lastCover==detail.cover)
+				return undefined;
+			braidFM_lastCover=detail.cover;
 			detail.album=$("#playerpanel-albumname").innerText;	      	
-	      	detail.artist=$("#playerpanel-artistname").innerText; 
+	      	detail.artist=$(".playerpanel-artistname")[0].innerText; 
 			return detail;
 			}
 		catch(ex)
 		{
 			return undefined
 		}
-		  	return detail;
+		  	
 	}
 
 	var sendLogInfo=function(loginfo)
@@ -100,7 +105,7 @@ var setupBraidFM_Embed=function ()
 				var tid=btnset[idx].id+"";
 				if(tid.indexOf("channel-btn")<0)
 					continue;
-				ch_res[tid]=btnset[idx].children[1].children[1].innerText;
+				ch_res[tid]=btnset[idx].children[2].children[0].innerText;
 				cnt_res++;
 			}
 			if(cnt_res>5)
@@ -124,12 +129,26 @@ var setupBraidFM_Embed=function ()
 		      	{ 
 		      		var t=getSongDetail();
 		      		if(t)
-		      		{	      			
-		      			info.songDetail=t;
-		      			braidFM_embed_last_song=t.song;	      				
+		      		{	      		
+		      			braidFM_embed_last_song=t.song;	      
+		      			braidFM_conn.postMessage({status:info,songDetail:t});	
+		      			return;			
 		      		}	      		
-		      	}		      	
-				braidFM_conn.postMessage({status:info});
+		      	}		      
+
+		      	for(var key in info)
+		      	{
+		      		if(!info.hasOwnProperty(key))
+		      			continue;
+		      		if(info[key]!=braidFM_lastStatus[key])
+		      		{
+		      			braidFM_lastStatus=info;
+		      			braidFM_conn.postMessage({status:info});
+		      			return;
+		      		}
+		      	}
+
+				
 		}
 		catch(ex)
 		{
@@ -138,7 +157,7 @@ var setupBraidFM_Embed=function ()
 	}
 }
 
-if(window.parent!=window.self&&window.top==window.parent)
+if(window.location.hash.indexOf("BraidFM")!=-1)
 {	
 	setupBraidFM_Embed();
 }
